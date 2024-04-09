@@ -10,7 +10,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name={'Home'} component={Home} />
+        <Tab.Screen
+          name={'Home'}
+          component={Home}
+          options={{
+            tabBarLabel: 'Home'
+          }}
+        />
         <Tab.Screen name={'CreateAd'} component={CreateAd} />
       </Tab.Navigator>
     </NavigationContainer>
