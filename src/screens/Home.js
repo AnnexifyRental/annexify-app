@@ -16,7 +16,7 @@ const Home = () => {
             console.log('inside fetchData:');
             const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
             console.log('inside try: ', response.data);
-            setPosts(response);
+            setPosts(response.data);
         } catch (error) {
             console.log('inside catch: ', error);
         }
@@ -26,7 +26,13 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            <Text>This is home</Text>
+            {posts.length > 0 ? (
+            posts.map((post) => (
+                <Text key={post.id}>{post.title}</Text> // Display post titles
+            ))
+        ) : (
+            <Text>Loading posts...</Text>
+        )}
         </View>
     );
 };
