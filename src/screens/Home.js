@@ -8,27 +8,19 @@ const Home = () => {
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/post')
-            .then(res => {
-                console.log('inside: ', res.data);
-                setPosts(res);
-            })
-            .catch(error => {
-                if (error.response) {
-                  // The request was made and the server responded with a status code
-                  console.log(error.response.data);
-                  console.log(error.response.status);
-                  console.log(error.response.headers);
-                } else if (error.request) {
-                  // The request was made but no response was received
-                  console.log(error.request);
-                } else {
-                  // Something happened in setting up the request that triggered an Error
-                  console.log('Error', error.message);
-                }
-                console.log(error.config);
-              })
-    });
+        fetchData();
+    }, []);
+
+    async function fetchData() {
+        try {
+            console.log('inside fetchData:');
+            const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+            console.log('inside try: ', response.data);
+            setPosts(response);
+        } catch (error) {
+            console.log('inside catch: ', error);
+        }
+    }
 
     console.log('outside: ', posts);
 
