@@ -13,26 +13,22 @@ const Home = () => {
 
     async function fetchData() {
         try {
-            console.log('inside fetchData:');
-            const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
-            console.log('inside try: ', response.data);
+            const response = await axios.get('http://192.168.1.7:8080/post');          
             setPosts(response.data);
         } catch (error) {
-            console.log('inside catch: ', error);
+            console.error(error);
         }
     }
 
-    console.log('outside: ', posts);
-
     return (
         <View style={styles.container}>
-            {posts.length > 0 ? (
-            posts.map((post) => (
-                <Text key={post.id}>{post.title}</Text> // Display post titles
-            ))
-        ) : (
-            <Text>Loading posts...</Text>
-        )}
+            {posts.length > 0
+                ? (posts.map((post) => (
+                    <Text key={post.uuid}>{post.title}</Text>
+                )))
+                : (
+                    <Text>Loading posts...</Text>
+                )}
         </View>
     );
 };
