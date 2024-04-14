@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
 const Card = ({ post }) => {
-    const { title, thumbnail } = post;
+    const { title, description, thumbnail } = post;
 
     return (
         <View style={styles.container}>
@@ -12,6 +12,7 @@ const Card = ({ post }) => {
                     <Image style={styles.cardImage} source={{ uri: thumbnail }} />
                 )}
                 <Text style={styles.cardText}>{title}</Text>
+                <Text style={styles.cardDescription}>{description}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -45,6 +46,11 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         margin: 10,
+    },
+    cardDescription: {
+        fontSize: 16,
+        marginLeft: 10,
+        marginBottom: 10,
     }
 
 });

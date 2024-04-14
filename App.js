@@ -9,9 +9,26 @@ const Tab = createBottomTabNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: 'tomato',
+          tabBarInactiveTintColor: 'gray',
+          tabBarStyle: {
+            backgroundColor: 'black',
+          },
+          headerStyle: {
+            backgroundColor: 'black',
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 25,
+            color: 'tomato'
+
+          }
+        }}
+      >
         <Tab.Screen
-          name={'Home'}
+          name={'Annexify'}
           component={Home}
           options={{
             tabBarLabel: 'Home'
