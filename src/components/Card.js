@@ -21,7 +21,7 @@ const Card = ({ post }) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 10,
+        marginTop: 5,
     },
     card: {
         margin: 10,
