@@ -8,7 +8,6 @@ const CreateAd = () => {
   return (
     <View style={styles.container}>
       <CreatePost />
-      <UploadPostImage />
     </View>
   );
 };

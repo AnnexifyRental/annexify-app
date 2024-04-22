@@ -1,36 +1,75 @@
 import React, { useState } from "react";
 import { View, Text, Button, Image, StyleSheet, TouchableOpacity } from "react-native";
-import ImagePicker from 'react-native-image-picker';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 
-const UploadPostImage = () => {
-    const openImageLibrary = () => {
-    const options = {
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
+import axios from "axios";
+
+const UploadPostImage = (props) => {
+
+  const { postUuid } = props;
+
+  const [image, setImage] = useState(null);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  const uploadImage = async () => {
+    const formData = new FormData();
+    formData.append('thumbnail', {
+      uri: image,
+      type: 'image/jpeg',
+      name: postUuid + '_thumbnail.jpg'
+    });
+    formData.append('uuid', postUuid);
+    try {
+      await axios.put("http://192.168.1.7:8080/post/images", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    } catch (error) {
+      console.log('Error', error.response.data.message);
+
+    }
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-      style={styles.uploadBtnContainer}
-        onPress={openImageLibrary}
+      <TouchableOpacity
+        style={styles.uploadBtnContainer}
+        onPress={pickImage}
       >
-        <Text style={styles.uploadTxt}>Upload thumbnail</Text>
+        {image
+          ? <Image source={{ uri: image }} style={{ width: '100%', height: '100%' }} />
+          : <Text style={styles.uploadTxt}>Choose picture</Text>}
       </TouchableOpacity>
+      <Button title="Upload" style={styles.uploadBtn} onPress={uploadImage} />
     </View>
   );
+
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 20,
+    // alignItems: 'center',
+
   },
-  uploadBtnContainer:{ 
+  uploadBtn: {
+    // width: '100%',
+  },
+  uploadBtnContainer: {
     height: 200,
     width: '90%',
     borderRadius: 10,
@@ -39,6 +78,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgrey',
     borderStyle: 'dashed',
     borderWidth: 1,
+    marginBottom: 10,
+    overflow: 'hidden',
   },
   uploadTxt: {
     fontSize: 20,

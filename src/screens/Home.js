@@ -21,8 +21,6 @@ const Home = () => {
         }
     }
 
-    console.log('post get api: ',posts);
-
     return (
         <View style={styles.container}>
           <FlatList
