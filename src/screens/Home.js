@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
 
 import axios from 'axios';
 import Card from "../components/Card";
@@ -7,6 +7,7 @@ import Card from "../components/Card";
 const Home = () => {
 
     const [posts, setPosts] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -14,23 +15,29 @@ const Home = () => {
 
     async function fetchData() {
         try {
+            setRefreshing(true);
             const response = await axios.get('http://192.168.1.7:8080/post');
             setPosts(response.data);
         } catch (error) {
             console.error(error);
+        } finally {
+            setRefreshing(false);
         }
     }
 
     return (
         <View style={styles.container}>
-          <FlatList
-            data={posts}
-            renderItem={({ item }) => <Card key={item.uuid} post={item} />}
-            keyExtractor={(item) => item.uuid}
-            ListEmptyComponent={<Text>Loading...</Text>}
-          />
+            <FlatList
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={fetchData} />
+                }
+                data={posts}
+                renderItem={({ item }) => <Card key={item.uuid} post={item} />}
+                keyExtractor={(item) => item.uuid}
+                ListEmptyComponent={<Text>Loading...</Text>}
+            />
         </View>
-      );
+    );
 
 };
 

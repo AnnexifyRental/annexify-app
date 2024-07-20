@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Button, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Button, Image, StyleSheet, TouchableOpacity, Alert } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
 import axios from "axios";
@@ -7,7 +7,6 @@ import axios from "axios";
 const UploadPostImage = (props) => {
 
   const { postUuid } = props;
-
   const [image, setImage] = useState(null);
 
   const pickImage = async () => {
@@ -37,9 +36,11 @@ const UploadPostImage = (props) => {
           'Content-Type': 'multipart/form-data'
         }
       });
+      setImage(null);
+      Alert.alert('Success!', 'Post created successfully.');
     } catch (error) {
       console.log('Error', error.response.data.message);
-
+      Alert.alert('Error!', 'Error uploading post thumbnail. Retry uploading the image.');
     }
   }
 
@@ -54,7 +55,7 @@ const UploadPostImage = (props) => {
           : <Text style={styles.uploadTxt}>Choose picture</Text>}
       </TouchableOpacity>
       <View style={styles.buttonView}>
-      <Button title="Upload" onPress={uploadImage} />
+        <Button title="Upload" onPress={uploadImage} />
       </View>
     </View>
   );
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
 });
 
 export default UploadPostImage;
- 
+
 
 
 
