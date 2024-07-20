@@ -5,6 +5,8 @@ import UploadPostImage from "./UploadPostImage";
 
 const CreatePost = () => {
 
+  const [title, setTitle] = useState("Enter Post Details");
+  const [hidePostForm, setHidePostForm] = useState(true);
   const [postUuid, setPostUuid] = useState(null);
   const [postData, setPostData] = useState({
     title: "",
@@ -21,6 +23,8 @@ const CreatePost = () => {
       console.log("Post created:", response.data);
       setPostUuid(response.data.uuid);
       setPostData({ title: "", description: "" });
+      setTitle("Upload Pictures");
+      setHidePostForm(false);
     } catch (error) {
       console.error("Error creating post:", error);
     }
@@ -28,19 +32,24 @@ const CreatePost = () => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        value={postData.title}
-        onChangeText={(text) => handleChange("title", text)}
-        placeholder="Enter Post Title"
-      />
-      <TextInput
-        style={styles.input}
-        value={postData.description}
-        onChangeText={(text) => handleChange("description", text)}
-        placeholder="Enter Post Description"
-      />
-      <Button title="Submit" onPress={handleSubmit} />
+      <Text style={styles.titleText}>{title}</Text>
+      {hidePostForm &&
+        <View>
+          <TextInput
+            style={styles.input}
+            value={postData.title}
+            onChangeText={(text) => handleChange("title", text)}
+            placeholder="Enter Post Title"
+          />
+          <TextInput
+            style={styles.input}
+            value={postData.description}
+            onChangeText={(text) => handleChange("description", text)}
+            placeholder="Enter Post Description"
+          />
+          <Button title="Upload pictures" onPress={handleSubmit} />
+        </View>
+      }
       {postUuid &&
         <UploadPostImage postUuid={postUuid} />
       }
@@ -57,7 +66,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     backgroundColor: "#eee",
-  }
+  },
+  titleText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
 });
 
 export default CreatePost;
