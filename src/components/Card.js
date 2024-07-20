@@ -1,15 +1,38 @@
-import React from "react";
-
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from "react-native";
 
 const Card = ({ post }) => {
     const { title, description, thumbnail } = post;
+    const [imageData, setImageData] = useState(null);
+    let imageUrl;
+
+    fetch(`http://192.168.1.7:8080/file-uploader?fileName=/${thumbnail}`)
+        .then(response => response.arrayBuffer())
+        .then(buffer => {
+            const base64Flag = 'data:image/jpeg;base64,';
+            const imageStr = arrayBufferToBase64(buffer);
+            setImageData(base64Flag + imageStr);
+        })
+        .catch(error => {
+            console.error("Error fetching and processing response:", error);
+        });
+
+    const arrayBufferToBase64 = (buffer) => {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+    };
+
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.card}>
                 {thumbnail && (
-                    <Image style={styles.cardImage} source={{ uri: thumbnail }} />
+                    <Image style={styles.cardImage} source={{ uri: imageData }} />
                 )}
                 <Text style={styles.cardText}>{title}</Text>
                 <Text style={styles.cardDescription}>{description}</Text>

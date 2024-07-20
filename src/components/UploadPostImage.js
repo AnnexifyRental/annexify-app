@@ -53,7 +53,9 @@ const UploadPostImage = (props) => {
           ? <Image source={{ uri: image }} style={{ width: '100%', height: '100%' }} />
           : <Text style={styles.uploadTxt}>Choose picture</Text>}
       </TouchableOpacity>
-      <Button title="Upload" style={styles.uploadBtn} onPress={uploadImage} />
+      <View style={styles.buttonView}>
+      <Button title="Upload" onPress={uploadImage} />
+      </View>
     </View>
   );
 
@@ -63,15 +65,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    // alignItems: 'center',
+    alignItems: 'center',
 
   },
-  uploadBtn: {
-    // width: '100%',
+  buttonView: {
+    width: '100%'
   },
   uploadBtnContainer: {
     height: 200,
-    width: '90%',
+    width: '100%',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',

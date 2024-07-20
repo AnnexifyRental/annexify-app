@@ -1,4 +1,3 @@
-
 import Home from './src/screens/Home';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
