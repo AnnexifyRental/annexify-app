@@ -7,36 +7,58 @@ import axios from "axios";
 const UploadPostImage = (props) => {
 
   const { postUuid } = props;
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
+      allowsMultipleSelection: true,
       aspect: [4, 3],
       quality: 1,
+      selectionLimit: 5,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImages(result.assets.map((image) => image.uri));
     }
+  };
+
+  const getThumbnail = () => {
+    return images.length > 0 ? images[0] : null;
+  };
+
+  const getRegularImages = () => {
+    return images.slice(1);
   };
 
   const uploadImage = async () => {
     const formData = new FormData();
-    formData.append('thumbnail', {
-      uri: image,
-      type: 'image/jpeg',
-      name: postUuid + '_thumbnail.jpg'
-    });
     formData.append('uuid', postUuid);
+    const thumbnail = getThumbnail();
+    if (thumbnail) {
+      formData.append('thumbnail', {
+        uri: thumbnail.uri,
+        type: thumbnail.type,
+        name: `${postUuid}_thumbnail.jpg`,
+      });
+    }
+
+    const regularImages = getRegularImages();
+    regularImages.forEach((image, index) => {
+      formData.append('images', {
+        uri: image.uri,
+        type: image.type,
+        name: `${postUuid}_image_${index + 1}.jpg`,
+      });
+    });
+
     try {
       await axios.put("http://192.168.1.7:8080/post/images", formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      setImage(null);
+      setImages([]);
       Alert.alert('Success!', 'Post created successfully.');
     } catch (error) {
       console.log('Error', error.response.data.message);
@@ -46,14 +68,25 @@ const UploadPostImage = (props) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.uploadBtnContainer}
-        onPress={pickImage}
-      >
-        {image
-          ? <Image source={{ uri: image }} style={{ width: '100%', height: '100%' }} />
-          : <Text style={styles.uploadTxt}>Choose picture</Text>}
+      {/* Display thumbnail */}
+      {getThumbnail() && (
+        <Image
+          source={{ uri: getThumbnail().uri }}
+          style={styles.thumbnail}
+        />
+      )}
+
+      {/* Display regular images */}
+      <View style={styles.imageGrid}>
+        {getRegularImages().map((image, index) => (
+          <Image key={index} source={{ uri: image.uri }} style={styles.image} />
+        ))}
+      </View>
+
+      <TouchableOpacity style={styles.uploadBtnContainer} onPress={pickImage}>
+        <Text style={styles.uploadTxt}>Add Images</Text>
       </TouchableOpacity>
+
       <View style={styles.buttonView}>
         <Button title="Upload" onPress={uploadImage} />
       </View>

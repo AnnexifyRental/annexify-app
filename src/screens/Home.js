@@ -16,7 +16,7 @@ const Home = () => {
     async function fetchData() {
         try {
             setRefreshing(true);
-            const response = await axios.get('http://192.168.1.7:8080/post');
+            const response = await axios.get('http://192.168.1.7:8080/post');            
             setPosts(response.data);
         } catch (error) {
             console.error(error);
@@ -32,8 +32,8 @@ const Home = () => {
                     <RefreshControl refreshing={refreshing} onRefresh={fetchData} />
                 }
                 data={posts}
-                renderItem={({ item }) => <Card key={item.uuid} post={item} />}
-                keyExtractor={(item) => item.uuid}
+                renderItem={({ item }) => <Card key={item.id} post={item} />}
+                keyExtractor={(item) => item.id}
                 ListEmptyComponent={<Text>Loading...</Text>}
             />
         </View>

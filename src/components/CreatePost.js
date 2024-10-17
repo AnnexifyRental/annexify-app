@@ -7,7 +7,7 @@ const CreatePost = () => {
 
   const [title, setTitle] = useState("Enter Post Details");
   const [hidePostForm, setHidePostForm] = useState(true);
-  const [postUuid, setPostUuid] = useState(null);
+  const [postId, setPostId] = useState(null);
   const [postData, setPostData] = useState({
     title: "",
     description: "",
@@ -21,7 +21,7 @@ const CreatePost = () => {
     try {
       const response = await axios.post("http://192.168.1.7:8080/post", postData);
       console.log("Post created:", response.data);
-      setPostUuid(response.data.uuid);
+      setPostId(response.data.id);  
       setPostData({ title: "", description: "" });
       setTitle("Upload Pictures");
       setHidePostForm(false);
