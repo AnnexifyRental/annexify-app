@@ -16,7 +16,7 @@ const Home = () => {
     async function fetchData() {
         try {
             setRefreshing(true);
-            const response = await axios.get('http://192.168.1.7:8080/post');            
+            const response = await axios.get('http://localhost:8082/post');            
             setPosts(response.data);
         } catch (error) {
             console.error(error);

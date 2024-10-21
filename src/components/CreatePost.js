@@ -19,7 +19,7 @@ const CreatePost = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("http://192.168.1.7:8080/post", postData);
+      const response = await axios.post("http://localhost:8082/post", postData);
       console.log("Post created:", response.data);
       setPostId(response.data.id);  
       setPostData({ title: "", description: "" });

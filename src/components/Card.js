@@ -6,7 +6,7 @@ const Card = ({ post }) => {
     const [imageData, setImageData] = useState(null);
     let imageUrl;
 
-    fetch(`http://192.168.1.7:8080/file-uploader?fileName=/${thumbnail}`)
+    fetch(`http://localhost:8082/file-uploader?fileName=/${thumbnail}`)
         .then(response => response.arrayBuffer())
         .then(buffer => {
             const base64Flag = 'data:image/jpeg;base64,';

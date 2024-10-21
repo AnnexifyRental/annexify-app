@@ -53,7 +53,7 @@ const UploadPostImage = (props) => {
     });
 
     try {
-      await axios.put("http://192.168.1.7:8080/post/images", formData, {
+      await axios.put("http://localhost:8082/post/images", formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
