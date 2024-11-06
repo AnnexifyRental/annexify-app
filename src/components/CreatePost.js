@@ -19,7 +19,11 @@ const CreatePost = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post("http://localhost:8082/post", postData);
+      if (!postData.title || !postData.description) {
+        alert("Please enter title and description");
+        return;
+      }
+      const response = await axios.post("http://192.168.1.7:8082/post", postData);
       console.log("Post created:", response.data);
       setPostId(response.data.id);  
       setPostData({ title: "", description: "" });
@@ -50,8 +54,8 @@ const CreatePost = () => {
           <Button title="Upload pictures" onPress={handleSubmit} />
         </View>
       }
-      {postUuid &&
-        <UploadPostImage postUuid={postUuid} />
+      {postId &&
+        <UploadPostImage postUuid={postId} />
       }
     </View>
   );
