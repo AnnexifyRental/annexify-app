@@ -23,7 +23,7 @@ const CreatePost = () => {
         alert("Please enter title and description");
         return;
       }
-      const response = await axios.post("http://192.168.1.7:8082/post", postData);
+      const response = await axios.post("http://192.168.1.7:8082/api/app/post", postData);
       console.log("Post created:", response.data);
       setPostId(response.data.id);  
       setPostData({ title: "", description: "" });

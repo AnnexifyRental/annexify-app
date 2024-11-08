@@ -1,21 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, Button, Image, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, Button, Image, StyleSheet, TouchableOpacity, Alert, ScrollView } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
-
 import axios from "axios";
+import { Ionicons } from '@expo/vector-icons'; // Import icons for the close button
 
 const UploadPostImage = (props) => {
-
   const { postUuid } = props;
   const [images, setImages] = useState([]);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
-      aspect: [4, 3],
-      quality: 1,
       selectionLimit: 5,
+      quality: 1,
     });
 
     if (!result.canceled) {
@@ -31,14 +29,18 @@ const UploadPostImage = (props) => {
     return images.slice(1);
   };
 
+  const removeImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
   const uploadImage = async () => {
     const formData = new FormData();
     formData.append('uuid', postUuid);
     const thumbnail = getThumbnail();
     if (thumbnail) {
       formData.append('thumbnail', {
-        uri: thumbnail.uri,
-        type: thumbnail.type,
+        uri: thumbnail,
+        type: 'image/jpeg',
         name: `${postUuid}_thumbnail.jpg`,
       });
     }
@@ -46,14 +48,14 @@ const UploadPostImage = (props) => {
     const regularImages = getRegularImages();
     regularImages.forEach((image, index) => {
       formData.append('images', {
-        uri: image.uri,
-        type: image.type,
+        uri: image,
+        type: 'image/jpeg',
         name: `${postUuid}_image_${index + 1}.jpg`,
       });
     });
 
     try {
-      await axios.put("http://192.168.1.7:8082/post/images", formData, {
+      await axios.put("http://192.168.1.7:8082/api/app/post/images", formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -61,49 +63,73 @@ const UploadPostImage = (props) => {
       setImages([]);
       Alert.alert('Success!', 'Post created successfully.');
     } catch (error) {
-      console.log('Error', error.response.data.message);
+      console.log('Error', error.response?.data?.message || error.message);
       Alert.alert('Error!', 'Error uploading post thumbnail. Retry uploading the image.');
     }
-  }
+  };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <Text style={styles.hintText}>
+        Your first image is chosen as the thumbnail of the post automatically.
+      </Text>
+
       {/* Display thumbnail */}
       {getThumbnail() && (
-        <Image
-          source={{ uri: getThumbnail().uri }}
-          style={styles.thumbnail}
-        />
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: getThumbnail() }} style={styles.image} />
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => removeImage(0)}
+          >
+            <Ionicons name="close-circle" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
       )}
 
       {/* Display regular images */}
       <View style={styles.imageGrid}>
         {getRegularImages().map((image, index) => (
-          <Image key={index} source={{ uri: image.uri }} style={styles.image} />
+          <View key={index + 1} style={styles.imageContainer}>
+            <Image source={{ uri: image }} style={styles.image} />
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => removeImage(index + 1)}
+            >
+              <Ionicons name="close-circle" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
         ))}
       </View>
 
-      <TouchableOpacity style={styles.uploadBtnContainer} onPress={pickImage}>
-        <Text style={styles.uploadTxt}>Add Images</Text>
-      </TouchableOpacity>
-
+      {images.length < 5 && (
+        <TouchableOpacity style={styles.uploadBtnContainer} onPress={pickImage}>
+          <Text style={styles.uploadTxt}>Add Images</Text>
+          <Text style={styles.uploadLimitTxt}>Up to 5 images</Text>
+        </TouchableOpacity>
+      )}
       <View style={styles.buttonView}>
         <Button title="Upload" onPress={uploadImage} />
       </View>
-    </View>
+    </ScrollView>
   );
-
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  scrollContainer: {
+    flexGrow: 1,
     padding: 20,
     alignItems: 'center',
-
   },
   buttonView: {
-    width: '100%'
+    width: '100%',
+    marginBottom: 20,
+  },
+  hintText: {
+    fontSize: 14,
+    color: 'gray',
+    marginBottom: 10,
+    textAlign: 'center',
   },
   uploadBtnContainer: {
     height: 200,
@@ -122,17 +148,30 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     fontWeight: 'bold',
   },
-  image: {
-    width: 200,
-    height: 200,
+  imageGrid: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+    alignItems: 'center',
     marginBottom: 20,
+  },
+  image: {
+    width: '100%',
+    height: undefined,
+    aspectRatio: 4 / 3,
+    borderRadius: 15,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 20,
+    padding: 2,
   },
 });
 
 export default UploadPostImage;
-
-
-
-
-
-
