@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import axios from "axios";
 import UploadPostImage from "./UploadPostImage";
+import BASE_URL from "../../Config";
 
 const CreatePost = () => {
 
@@ -23,7 +24,7 @@ const CreatePost = () => {
         alert("Please enter title and description");
         return;
       }
-      const response = await axios.post("http://192.168.1.7:8082/api/app/post", postData);
+      const response = await axios.post(`${BASE_URL}/post`, postData);
       console.log("Post created:", response.data);
       setPostId(response.data.id);  
       setPostData({ title: "", description: "" });
@@ -55,7 +56,7 @@ const CreatePost = () => {
         </View>
       }
       {postId &&
-        <UploadPostImage postUuid={postId} />
+        <UploadPostImage postId={postId} />
       }
     </View>
   );

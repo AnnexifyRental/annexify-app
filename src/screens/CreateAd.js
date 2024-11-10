@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import CreatePost from "../components/CreatePost";
-import UploadPostImage from "../components/UploadPostImage";
 import { StyleSheet, View } from "react-native";
 
 const CreateAd = () => {

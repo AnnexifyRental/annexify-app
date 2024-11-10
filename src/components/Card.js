@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from "react-native";
+import BASE_URL from "../../Config";
 
 const Card = ({ post }) => {
     const { title, description, thumbnail } = post;
@@ -7,7 +8,7 @@ const Card = ({ post }) => {
     let imageUrl;
 
     if (thumbnail) {
-        fetch(`http://192.168.1.7:8082/api/app/file-uploader?fileName=/${thumbnail}`)
+        fetch(`${BASE_URL}/file-uploader?fileName=/${thumbnail}`)
             .then(response => response.arrayBuffer())
             .then(buffer => {
                 const base64Flag = 'data:image/jpeg;base64,';

@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
 
 import axios from 'axios';
 import Card from "../components/Card";
+import BASE_URL from "../../Config";
+
 
 const Home = () => {
 
@@ -16,7 +18,7 @@ const Home = () => {
     async function fetchData() {
         try {
             setRefreshing(true);
-            const response = await axios.get('http://192.168.1.7:8082/api/app/post');                    
+            const response = await axios.get(`${BASE_URL}/post`);
             setPosts(response.data);
         } catch (error) {
             console.error(error);

@@ -3,9 +3,10 @@ import { View, Text, Button, Image, StyleSheet, TouchableOpacity, Alert, ScrollV
 import * as ImagePicker from 'expo-image-picker';
 import axios from "axios";
 import { Ionicons } from '@expo/vector-icons'; // Import icons for the close button
+import BASE_URL from "../../Config";
 
 const UploadPostImage = (props) => {
-  const { postUuid } = props;
+  const { postId } = props;
   const [images, setImages] = useState([]);
 
   const pickImage = async () => {
@@ -35,13 +36,13 @@ const UploadPostImage = (props) => {
 
   const uploadImage = async () => {
     const formData = new FormData();
-    formData.append('uuid', postUuid);
+    formData.append('id', postId);
     const thumbnail = getThumbnail();
     if (thumbnail) {
       formData.append('thumbnail', {
         uri: thumbnail,
         type: 'image/jpeg',
-        name: `${postUuid}_thumbnail.jpg`,
+        name: `${postId}_thumbnail.jpg`,
       });
     }
 
@@ -50,12 +51,12 @@ const UploadPostImage = (props) => {
       formData.append('images', {
         uri: image,
         type: 'image/jpeg',
-        name: `${postUuid}_image_${index + 1}.jpg`,
+        name: `${postId}_image_${index + 1}.jpg`,
       });
     });
 
     try {
-      await axios.put("http://192.168.1.7:8082/api/app/post/images", formData, {
+      await axios.put(`${BASE_URL}/post/images`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
