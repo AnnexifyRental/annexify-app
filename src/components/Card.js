@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from "react-native";
 import BASE_URL from "../../Config";
+import { useNavigation } from "@react-navigation/native";
 
 const Card = ({ post }) => {
+    const navigation = useNavigation();
     const { title, description, thumbnail } = post;
     const [imageData, setImageData] = useState(null);
     let imageUrl;
@@ -30,21 +32,19 @@ const Card = ({ post }) => {
         };
     }
 
-
-
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.card}>
-                {thumbnail && (
-                    <Image style={styles.cardImage} source={{ uri: imageData }} />
-                )}
+            <TouchableOpacity
+                style={styles.card}
+                onPress={() => navigation.navigate('PostDetails', { postId: post.id })} 
+            >
+                {thumbnail && <Image style={styles.cardImage} source={{ uri: imageData }} />}
                 <Text style={styles.cardText}>{title}</Text>
                 <Text style={styles.cardDescription}>{description}</Text>
             </TouchableOpacity>
         </View>
     );
-}
-
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -79,7 +79,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginBottom: 10,
     }
-
 });
 
 export default Card;
