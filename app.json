@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "annexify-app",
-    "slug": "annexify-app",
+    "name": "Annexify App",
+    "slug": "Annexify",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-screen.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -8,9 +8,17 @@ import Home from './src/screens/Home';
 import CreateAd from './src/screens/CreateAd';
 import PostDetails from './src/screens/PostDetails'; 
 import { Feather } from '@expo/vector-icons';
+import * as SplashScreen from 'expo-splash-screen';
+import Amplify from 'aws-amplify';
+import awsConfig from './AwsConfig';
+
+Amplify.configure(awsConfig);
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+SplashScreen.preventAutoHideAsync();
 
 function HomeStack() {
   return (
@@ -22,6 +30,14 @@ function HomeStack() {
 }
 
 export default function App() {
+  useEffect(() => {
+    async function prepare() {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate a delay for demonstration
+      await SplashScreen.hideAsync();
+    }
+
+    prepare();
+  }, []);
   return (
     <NavigationContainer>
       <Tab.Navigator
