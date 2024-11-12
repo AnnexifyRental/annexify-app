@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
-
-import axios from 'axios';
 import Card from "../components/Card";
-import BASE_URL from "../../Config";
-
+import { apiClient } from "../services/ApiService";
 
 const Home = () => {
 
@@ -14,11 +11,11 @@ const Home = () => {
     useEffect(() => {
         fetchData();
     }, []);
-
+    
     async function fetchData() {
         try {
             setRefreshing(true);
-            const response = await axios.get(`${BASE_URL}/post`);
+            const response = await apiClient.get('/post');
             setPosts(response.data);
         } catch (error) {
             console.error(error);

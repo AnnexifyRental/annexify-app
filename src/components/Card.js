@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from "react-native";
-import BASE_URL from "../../Config";
 import { useNavigation } from "@react-navigation/native";
+import { apiClient } from "../services/ApiService";
 
 const Card = ({ post }) => {
     const navigation = useNavigation();
@@ -10,17 +10,20 @@ const Card = ({ post }) => {
     let imageUrl;
 
     if (thumbnail) {
-        fetch(`${BASE_URL}/file-uploader?fileName=/${thumbnail}`)
-            .then(response => response.arrayBuffer())
-            .then(buffer => {
+        apiClient.get('/file-uploader', {
+            params: {
+                fileName: `/${thumbnail}`
+            },
+            responseType: 'arraybuffer'
+        })
+            .then(response => {
                 const base64Flag = 'data:image/jpeg;base64,';
-                const imageStr = arrayBufferToBase64(buffer);
+                const imageStr = arrayBufferToBase64(response.data);
                 setImageData(base64Flag + imageStr);
             })
             .catch(error => {
                 console.error("Error fetching and processing response:", error);
             });
-
         const arrayBufferToBase64 = (buffer) => {
             let binary = '';
             const bytes = new Uint8Array(buffer);
@@ -36,7 +39,7 @@ const Card = ({ post }) => {
         <View style={styles.container}>
             <TouchableOpacity
                 style={styles.card}
-                onPress={() => navigation.navigate('PostDetails', { postId: post.id })} 
+                onPress={() => navigation.navigate('PostDetails', { postId: post.id })}
             >
                 {thumbnail && <Image style={styles.cardImage} source={{ uri: imageData }} />}
                 <Text style={styles.cardText}>{title}</Text>

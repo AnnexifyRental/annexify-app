@@ -3,7 +3,7 @@ import { View, Text, Button, Image, StyleSheet, TouchableOpacity, Alert, ScrollV
 import * as ImagePicker from 'expo-image-picker';
 import axios from "axios";
 import { Ionicons } from '@expo/vector-icons'; // Import icons for the close button
-import BASE_URL from "../../Config";
+import { apiClient } from "../services/ApiService";
 
 const UploadPostImage = (props) => {
   const { postId } = props;
@@ -56,7 +56,7 @@ const UploadPostImage = (props) => {
     });
 
     try {
-      await axios.put(`${BASE_URL}/post/images`, formData, {
+      await apiClient.put('/post/images', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

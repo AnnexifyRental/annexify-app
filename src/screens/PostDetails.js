@@ -1,113 +1,148 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet, FlatList, ScrollView, ActivityIndicator } from "react-native";
-import axios from "axios";
-import BASE_URL from "../../Config";
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { apiClient } from '../services/ApiService';
 
 const PostDetails = ({ route }) => {
   const { postId } = route.params;
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [thumbnailData, setThumbnailData] = useState(null);
+  const [imageData, setImageData] = useState({});
 
   useEffect(() => {
-    fetchPostDetails();
-  }, []);
+    const fetchPostDetails = async () => {
+      try {
+        const response = await apiClient.get(`/post/by/id`, {
+          params: {
+            id: postId
+          }
+        });
+        setPost(response.data);
+        if (response.data.thumbnail) {
+          fetchThumbnail(response.data.thumbnail);
+        }
+        if (response.data.images) {
+          fetchImages(response.data.images);
+        }
+      } catch (error) {
+        console.error('Error fetching post details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchPostDetails = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/post/by/id?id=${postId}`);
-      setPost(response.data);
-    } catch (error) {
-      console.error("Error fetching post details:", error);
-    } finally {
-      setLoading(false);
+    const fetchThumbnail = async (thumbnail) => {
+      try {
+        const response = await apiClient.get(`/file-uploader`, {
+          params: {
+            fileName: `/${thumbnail}`
+          },
+          responseType: 'arraybuffer'
+        });
+        const base64Flag = 'data:image/jpeg;base64,';
+        const imageStr = arrayBufferToBase64(response.data);
+        setThumbnailData(base64Flag + imageStr);
+      } catch (error) {
+        console.error('Error fetching thumbnail:', error);
+      }
+    };
+
+    const fetchImages = async (images) => {
+      try {
+        const imagePromises = images.map(async (image) => {
+          const response = await apiClient.get(`/file-uploader`, {
+            params: {
+              fileName: `/${image}`
+            },
+            responseType: 'arraybuffer'
+          });
+          const base64Flag = 'data:image/jpeg;base64,';
+          const imageStr = arrayBufferToBase64(response.data);
+          return { [image]: base64Flag + imageStr };
+        });
+        const imageDataArray = await Promise.all(imagePromises);
+        const imageDataObject = imageDataArray.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+        setImageData(imageDataObject);
+      } catch (error) {
+        console.error('Error fetching images:', error);
+      }
+    };
+
+    fetchPostDetails();
+  }, [postId]);
+
+  const arrayBufferToBase64 = (buffer) => {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
     }
+    return btoa(binary);
   };
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="dodgerblue" />
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {post.thumbnail && (
-        <Image source={{ uri: `${BASE_URL}/file-uploader?fileName=/${post.thumbnail}` }} style={styles.thumbnail} />
-      )}
-      <Text style={styles.title}>{post.title}</Text>
-      <Text style={styles.description}>{post.description}</Text>
-
-      <Text style={styles.imageSectionTitle}>Additional Images</Text>
-      {post.images && post.images.length > 0 ? (
-        <FlatList
-          data={post.images}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <Image source={{ uri: `${BASE_URL}/file-uploader?fileName=/${item}` }} style={styles.image} />
+    <View style={styles.container}>
+      {post ? (
+        <>
+          <Text style={styles.title}>{post.title}</Text>
+          <Text style={styles.description}>{post.description}</Text>
+          {thumbnailData && (
+            <Image source={{ uri: thumbnailData }} style={styles.thumbnail} />
           )}
-          horizontal
-          contentContainerStyle={styles.imageList}
-        />
+          {post.images && post.images.map((item, index) => (
+            <Image key={index} source={{ uri: imageData[item] }} style={styles.image} />
+          ))}
+        </>
       ) : (
-        <Text style={styles.noImagesText}>No additional images available</Text>
+        <Text style={styles.errorText}>Post not found</Text>
       )}
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     padding: 20,
-    alignItems: "center",
-    backgroundColor: "#fff",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  thumbnail: {
-    width: "100%",
-    height: 200,
-    borderRadius: 10,
-    marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "dodgerblue",
+    fontWeight: 'bold',
     marginBottom: 10,
-    textAlign: "center",
   },
   description: {
     fontSize: 16,
-    color: "gray",
-    textAlign: "center",
-    marginBottom: 20,
+    color: '#333',
   },
-  imageSectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "dodgerblue",
-    marginBottom: 10,
-  },
-  imageList: {
-    paddingVertical: 10,
+  thumbnail: {
+    width: '100%',
+    height: 200,
+    marginTop: 20,
+    borderRadius: 10,
   },
   image: {
-    width: 150,
-    height: 150,
+    width: '100%',
+    height: 200,
+    marginTop: 20,
     borderRadius: 10,
-    marginRight: 10,
   },
-  noImagesText: {
-    fontSize: 14,
-    color: "gray",
-    textAlign: "center",
-    marginTop: 10,
+  errorText: {
+    fontSize: 18,
+    color: 'red',
   },
 });
 
