@@ -7,8 +7,8 @@ const secureStoreOptions = {
 };
 
 const publicApiClient = axios.create({
-    baseURL: 'http://172.20.10.3:8082/api/app'
-  });
+  baseURL: 'http://172.20.10.3:8082/api/app'
+});
 
 const apiClient = axios.create({
   baseURL: 'http://172.20.10.3:8082/api/app',

@@ -27,7 +27,7 @@ SplashScreen.preventAutoHideAsync();
 function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Stack.Screen name="HomeScreen" component={Home} options={{ headerShown: false }} />
       <Stack.Screen name="PostDetails" component={PostDetails} options={{ title: 'Post Details' }} />
     </Stack.Navigator>
   );
@@ -52,6 +52,8 @@ export default function App() {
     };
 
     const handleOpenURL = async ({ url }) => {
+      console.log('URL:', url);
+
       const accessTokenMatch = url.match(/access_token=([^&]+)/);
       const idTokenMatch = url.match(/id_token=([^&]+)/);
       const accessToken = accessTokenMatch ? accessTokenMatch[1] : null;
@@ -87,8 +89,8 @@ export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Home" component={HomeStack} options={{ tabBarIcon: ({ color, size }) => (<Feather name="home" color={color} size={size} />) }} />
-        <Tab.Screen name="CreateAd" component={CreateAd} options={{ tabBarIcon: ({ color, size }) => (<Feather name="plus-circle" color={color} size={size} />) }} />
+        <Tab.Screen name="HomeTab" component={HomeStack} options={{ tabBarIcon: ({ color, size }) => (<Feather name="home" color={color} size={size} />) }} />
+        <Tab.Screen name="CreateAdTab" component={CreateAd} options={{ tabBarIcon: ({ color, size }) => (<Feather name="plus-circle" color={color} size={size} />) }} />
       </Tab.Navigator>
     </NavigationContainer>
   );
