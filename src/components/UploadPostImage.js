@@ -34,7 +34,7 @@ const UploadPostImage = (props) => {
     setImages(images.filter((_, i) => i !== index));
   };
 
-  const uploadImage = async () => {
+  const uploadImages = async () => {
     const formData = new FormData();
     formData.append('id', postId);
     const thumbnail = getThumbnail();
@@ -110,7 +110,7 @@ const UploadPostImage = (props) => {
         </TouchableOpacity>
       )}
       <View style={styles.buttonView}>
-        <Button title="Upload" onPress={uploadImage} />
+        <Button title="Save Pictures" onPress={uploadImages} />
       </View>
     </ScrollView>
   );
